@@ -1,4 +1,7 @@
 using MediatR;
+using Questao5.Application.Commands.Interface;
+using Questao5.Application.Commands.Requests;
+using Questao5.Infrastructure.Database.CommandStore.Requests;
 using Questao5.Infrastructure.Sqlite;
 using System.Reflection;
 
@@ -12,6 +15,12 @@ builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 // sqlite
 builder.Services.AddSingleton(new DatabaseConfig { Name = builder.Configuration.GetValue<string>("DatabaseName", "Data Source=database.sqlite") });
 builder.Services.AddSingleton<IDatabaseBootstrap, DatabaseBootstrap>();
+builder.Services.AddScoped<IMovimentacaoFinanceiroService, MovimentacaoFinanceiroService>();
+builder.Services.AddScoped<ContaCorrenteRepository>(provider =>
+{
+    var databaseConfig = provider.GetRequiredService<DatabaseConfig>();
+    return new ContaCorrenteRepository(databaseConfig.Name);
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
